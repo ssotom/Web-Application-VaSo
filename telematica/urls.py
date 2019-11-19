@@ -22,6 +22,7 @@ from telematica.my_app import views
 router = routers.SimpleRouter()
 router.register('products', views.ProductViewSet)
 router.register('customers', views.CustomerViewSet)
+router.register('comments', views.CommentViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

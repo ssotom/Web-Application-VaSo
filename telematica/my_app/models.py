@@ -6,14 +6,18 @@ class Product(models.Model):
     picture = models.URLField()
 
 class Customer(models.Model):
-    id = models.IntegerField(primary_key = True)
+    id = models.IntegerField(primary_key = True, verbose_name='ID')
     name = models.CharField(max_length=32)
     adress = models.CharField(max_length=64)
     city = models.CharField(max_length=32)
     birth = models.DateField()
     email = models.EmailField()
+    def __str__(self):
+        return self.name
 
 class Comment(models.Model):
-    user = models.ForeignKey(Customer, related_name='user_id', on_delete=models.CASCADE)
-    product_id = models.IntegerField(unique=True, default=0)
+    customer = models.ForeignKey(Customer, default=0, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, default=0, on_delete=models.PROTECT, related_name='comments')
     comment = models.TextField()
+    def __str__(self):
+        return self.comment
