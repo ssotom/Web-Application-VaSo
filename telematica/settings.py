@@ -85,10 +85,17 @@ WSGI_APPLICATION = 'telematica.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
         'default': {
         'ENGINE': 'djongo',
         'HOST': 'mongodb+srv://ssotom:bRDqDKViaxMrsWbC@cluster0-uepon.mongodb.net/test?retryWrites=true&w=majority',
+    }
+}"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
 

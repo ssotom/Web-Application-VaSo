@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     status: '',
     token: localStorage.getItem('token') || '',
-    user : {},
+    user : localStorage.getItem('user') || {},
   },
   mutations: {
     auth_request(state){
@@ -25,6 +25,7 @@ export default new Vuex.Store({
     logout(state){
       state.status = ''
       state.token = ''
+      state.user = {}
     },
   },
   actions: {
@@ -34,15 +35,23 @@ export default new Vuex.Store({
         axios({url: 'http://localhost:8000/auth/token/login/', data: user, method: 'POST' })
         .then(resp => {
           const token = resp.data.auth_token
-          const user = resp.data.user
-          localStorage.setItem('token', token)
           axios.defaults.headers.common['Authorization'] = 'Token ' + token
-          commit('auth_success', token, user)
+          axios({url: 'http://localhost:8000/auth/users/me/', method: 'GET' })
+          .then(resp => {
+            const user = JSON.stringify(resp.data)
+            localStorage.setItem('token', token)
+            localStorage.setItem('user', user)
+            commit('auth_success', token, user)
           resolve(resp)
+          }).catch(err => {
+            commit('auth_error')
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            reject(err)
+          })
         })
         .catch(err => {
           commit('auth_error')
-          localStorage.removeItem('token')
           reject(err)
         })
       })
@@ -65,6 +74,7 @@ export default new Vuex.Store({
         axios({url: 'http://localhost:8000/auth/token/logout/', method: 'POST' })
         commit('logout')
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
         delete axios.defaults.headers.common['Authorization']
         resolve()
       })
