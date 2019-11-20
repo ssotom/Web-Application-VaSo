@@ -25,6 +25,15 @@
       <b-button type="submit" block size="lg" variant="primary">Inciar Sesión</b-button>
     </b-form>
     <center><b-spinner class="mt-2" variant="primary" type="grow" label="Spinning" v-if="spinner"></b-spinner></center>
+    <b-alert
+      v-model="showBottom"
+      class="position-fixed fixed-bottom m-0 rounded-0"
+      style="z-index: 2000;"
+      variant="danger"
+      dismissible
+    >
+      Usuario y/o contraseña incorrectos
+    </b-alert>
   </div>
 </template>
 
@@ -35,6 +44,7 @@
         username : "",
         password : "",
         spinner : false,
+        showBottom: false,
       }
     },
     methods: {
@@ -47,6 +57,7 @@
         this.$router.push('/')
        }).catch(err => { 
          this.spinner = false
+         this.showBottom = true
          console.log(err.response.data) 
        })
       }

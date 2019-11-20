@@ -28,7 +28,9 @@
         placeholder="¿Qué piensas de nuestros productos?"
         rows="4"
         max-rows="5"
-        no-resize>
+        required
+        no-resize
+        maxlength="150">
         </b-form-textarea>
         <b-button type="submit" class="mt-2" block variant="primary">Enviar</b-button>
        </b-form>
@@ -41,7 +43,7 @@
         <div class="card">
         <div class="card-body">
             <div class="d-flex flex-grow-1 align-items-baseline">
-                <h5 class="card-title">{{product.name}}</h5>
+                <h5 class="card-title" @click="showComments(product.id)"><b-link class="text-reset" >{{product.name}}</b-link></h5>
                 <b-form-checkbox v-show="opinion" class="ml-auto" v-model="selected" name="checkbox-{product.id}" v-bind:value="product.id">
                 </b-form-checkbox>
             </div>
@@ -51,7 +53,16 @@
         </div>
     </div>
     </template>
-    </div> 
+    </div>
+    <b-modal id="modal-1" title="Comentarios" size="lg" scrollable hide-footer>
+    <template v-for="comment in comments">
+        <div class="d-flex flex-grow-1 align-items-baseline">
+            <h6>{{comment.customer}} </h6>
+            <small class="ml-auto">{{comment.date}}</small>
+        </div>
+        <p>{{comment.comment}}</p>
+    </template>
+  </b-modal>
   </div>
 </template>
 
@@ -65,7 +76,8 @@ export default {
             products: [],
             selected: [],
             text: '',
-            opinion: false
+            opinion: false,
+            comments: []
         }
     },
     methods: {
@@ -86,26 +98,29 @@ export default {
             }
         },
         sendOpinion() {
-            if(this.selected > 0) {
+            if(Object.keys(this.selected).length > 0) {
                 let user = JSON.parse(localStorage.getItem('user'))
+                var now = new Date()
                 for (let product of this.selected) {
                     let data = {
                         customer: user.id,
                         product: product,
-                        comment: this.text
+                        comment: this.text,
+                        date: now.getFullYear() + "-" + (now.getMonth() + 1) +  "-" + now.getDate()
                     }
                     const path = `${process.env.BASE_URL}api/comments/`
                     axios.post(path, data).then((response) => {
-                        swal("Gracias por su comentario, su aporte es importante para nosotros", "", "success")
                     }).catch((error) => {
-                        console.log(error)
+                        console.log(error.response)
+                        return;
                     })
-                    this.$bvToast.hide('my-toast')
-                    this.opinion = false
-                    this.selected = []
-                    this.text = ''
                 }
-            }  else{
+                swal("Gracias por su comentario, su aporte es importante para nosotros", "", "success")
+                this.$bvToast.hide('my-toast')
+                this.opinion = false
+                this.selected = []
+                this.text = ''
+            }  else {
              this.$bvToast.show('no-toast-2')
             }
         },
@@ -126,6 +141,15 @@ export default {
                 }, 1000)
             }
         },
+        showComments(id) {
+            const path = `${process.env.BASE_URL}api/products/${id}/`
+            axios.get(path).then((response) => {
+                this.comments = response.data.comments
+                this.$bvModal.show("modal-1")
+            }).catch((error) => {
+                console.log(error)
+            })
+        }
     },
     created() {
         this.getProducts()

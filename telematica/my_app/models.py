@@ -19,5 +19,6 @@ class Comment(models.Model):
     customer = models.ForeignKey(Customer, default=0, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, default=0, on_delete=models.PROTECT, related_name='comments')
     comment = models.TextField()
+    date = models.DateField(default="2000-01-01")
     def __str__(self):
         return self.comment

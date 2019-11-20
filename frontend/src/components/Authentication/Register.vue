@@ -84,7 +84,8 @@
           v-model="login.password"
           type="password"
           required
-          placeholder="Contraseña">
+          placeholder="Contraseña"
+          minlength="8">>
         </b-form-input>
         </b-form-group>
       </div>
@@ -95,7 +96,8 @@
           v-model="login.re_password"
           type="password"
           required
-          placeholder="Confirmar contraseña">
+          placeholder="Confirmar contraseña"
+          minlength="8">
         </b-form-input>
         </b-form-group>
       </div>
@@ -103,6 +105,15 @@
     <b-button type="submit" block size="lg" variant="primary">Registrarse</b-button>
   </form>
   <center><b-spinner class="mt-2" variant="primary" type="grow" label="Spinning" v-if="spinner"></b-spinner></center>
+  <b-alert
+      v-model="showBottom"
+      class="position-fixed fixed-bottom m-0 rounded-0"
+      style="z-index: 2000;"
+      variant="danger"
+      dismissible
+    >
+      {{text}}
+    </b-alert>
 </div>
 </template>
 
@@ -127,28 +138,37 @@ import swal from 'sweetalert'
           email: '',
         },
         spinner : false,
+        text: '',
+        showBottom: false,
       }
     },
     methods: {
       registerLogin() {
-        this.spinner = true
-        this.$store.dispatch('register', this.login)
-       .then((resp) => this.registerCustomer(resp))
-       .catch(err => {
-         this.spinner = false
-         console.log(err)
-        })
+        if (this.login.password === this.login.re_password) {
+            this.spinner = true
+            this.$store.dispatch('register', this.login)
+            .then((resp) => this.registerCustomer(resp))
+            .catch(err => {
+              this.spinner = false
+              this.text = err.response.data
+              this.showBottom = true
+              console.log(err)
+            })
+          }else{
+              this.text = "La contraseñas no coinciden"
+              this.showBottom = true
+          }
       },
       registerCustomer(resp) {
-            this.customer.id = resp.data.id        
-            const path = `${process.env.BASE_URL}api/customers/`
-            axios.post(path, this.customer).then((response) => {
-                this.$router.push('/login')
-                swal("Registrado con exito!", "", "success")
-            }).catch((error) => {
-                this.spinner = false
-                console.log(error.response.data)
-            })
+          this.customer.id = resp.data.id        
+          const path = `${process.env.BASE_URL}api/customers/`
+          axios.post(path, this.customer).then((response) => {
+              this.$router.push('/login')
+              swal("Registrado con exito!", "", "success")
+          }).catch((error) => {
+              this.spinner = false
+              console.log(error.response.data)
+          })
         },
     }
   }

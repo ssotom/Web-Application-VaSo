@@ -15,7 +15,7 @@ class CommentListSerializer(serializers.ModelSerializer):
     customer = serializers.StringRelatedField()
     class Meta:
         model = Comment
-        fields = ['comment', 'customer']
+        fields = ['comment', 'customer', 'date']
 
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
