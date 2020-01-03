@@ -19,21 +19,6 @@ let router = new Router({
       component: ListProduct
     },
     {
-      path: '/books',
-      name: 'ListBook',
-      component: ListBook
-    },
-    {
-      path: '/books/:bookId/edit',
-      name: 'EditBook',
-      component: EditBook
-    },
-    {
-      path: '/books/new',
-      name: 'NewBook',
-      component: NewBook
-    },
-    {
       path: '/login',
       name: 'Login',
       component:Login,
