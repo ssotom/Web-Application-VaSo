@@ -19,6 +19,12 @@ from django.urls import include, re_path
 from rest_framework import routers
 from telematica.my_app import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+from django.conf.urls import url
+from django.views.generic import TemplateView
+
 router = routers.SimpleRouter()
 router.register('products', views.ProductViewSet)
 router.register('customers', views.CustomerViewSet)
@@ -29,4 +35,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
-]
+
+    url(r'^.*$', TemplateView.as_view(template_name='index.html'))
+]   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

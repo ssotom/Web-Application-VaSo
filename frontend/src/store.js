@@ -32,11 +32,11 @@ export default new Vuex.Store({
     login({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/auth/token/login/', data: user, method: 'POST' })
+        axios({url: `${process.env.BASE_URL}auth/token/login/`, data: user, method: 'POST' })
         .then(resp => {
           const token = resp.data.auth_token
           axios.defaults.headers.common['Authorization'] = 'Token ' + token
-          axios({url: 'http://localhost:8000/auth/users/me/', method: 'GET' })
+          axios({url: `${process.env.BASE_URL}auth/users/me/`, method: 'GET' })
           .then(resp => {
             const user = JSON.stringify(resp.data)
             localStorage.setItem('token', token)
@@ -71,7 +71,7 @@ export default new Vuex.Store({
     },
     logout({commit}){
       return new Promise((resolve, reject) => {
-        axios({url: 'http://localhost:8000/auth/token/logout/', method: 'POST' })
+        axios({url:`${process.env.BASE_URL}auth/token/logout/`, method: 'POST' })
         commit('logout')
         localStorage.removeItem('token')
         localStorage.removeItem('user')
